@@ -72,9 +72,9 @@ def regret_to_strategy(regret):
 
 
 def regrets_to_strategies(regrets):
-    number_of_regrets = len(regrets)
-    strategies = [None] * number_of_regrets
-    for index in range(number_of_regrets):
+    number_of_regret_tuples = len(regrets)
+    strategies = [None] * number_of_regret_tuples
+    for index in range(number_of_regret_tuples):
         regret = regrets[index]
         strategy = regret_to_strategy(regret)
         strategies[index] = strategy
