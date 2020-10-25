@@ -13,7 +13,10 @@ class CFRAgent(Agent):
         self.action = None
 
     def choose_action(self, game):
-        self.action = random.choices(game.game_specification['actions'], weights=self.strategy)[0]
+        self.action = random.choices(
+            game.game_specification['actions'],
+            weights=self.strategy
+        )[0]
         return self.action
 
     def receive_result(self, result):

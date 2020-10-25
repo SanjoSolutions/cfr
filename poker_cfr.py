@@ -12,8 +12,8 @@ class PokerGameCFR(PokerGame):
 
 
 class PokerCFRAgent(PokerPlayer, CFRAgent):
-    def __init__(self, game_specification, agent_index, regret=None, strategy=None):
-        super(PokerCFRAgent).__init__()
+    def __init__(self, game_specification, agent_index, stack, regret=None, strategy=None):
+        super(PokerCFRAgent).__init__(stack)
         super(PokerPlayer).__init__(game_specification, agent_index, regret, strategy)
 
     def choose_action(self, game):
@@ -25,12 +25,13 @@ if __name__ == '__main__':
         'number_of_players': 2,
         'actions': list(ActionType)
     }
+    stack = 1000
     agents = tuple(
-        PokerCFRAgent(game_specification, agent_index)
+        PokerCFRAgent(game_specification, agent_index, stack)
         for agent_index
         in range(game_specification['number_of_players'])
     )
-    game = PokerGame(agents, big_blind=20, small_blind=10)
+    game = PokerGame(agents, big_blind=10, small_blind=5)
     number_of_iterations = 1
     strategies = cfr_with_agents(game, number_of_iterations)
     print('strategies', strategies)
