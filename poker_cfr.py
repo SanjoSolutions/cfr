@@ -1,5 +1,5 @@
 from poker import PokerPlayer, ActionType, PokerGame
-from cfr import cfr_with_agents, CFRAgent
+from cfr import cfr, CFRLearningAgent
 
 
 class PokerGameCFR(PokerGame):
@@ -11,13 +11,13 @@ class PokerGameCFR(PokerGame):
                 agent.receive_result(result)
 
 
-class PokerCFRAgent(PokerPlayer, CFRAgent):
+class PokerCFRAgent(PokerPlayer, CFRLearningAgent):
     def __init__(self, game_specification, agent_index, stack, regret=None, strategy=None):
         super(PokerCFRAgent).__init__(stack)
         super(PokerPlayer).__init__(game_specification, agent_index, regret, strategy)
 
     def choose_action(self, game):
-        return super(CFRAgent).choose_action(game)
+        return super(CFRLearningAgent).choose_action(game)
 
 
 if __name__ == '__main__':
@@ -33,5 +33,5 @@ if __name__ == '__main__':
     )
     game = PokerGame(agents, big_blind=10, small_blind=5)
     number_of_iterations = 1
-    strategies = cfr_with_agents(game, number_of_iterations)
+    strategies = cfr(game, number_of_iterations)
     print('strategies', strategies)

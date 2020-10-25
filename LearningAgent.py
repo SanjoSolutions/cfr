@@ -1,4 +1,4 @@
-class Agent:
+class LearningAgent:
     def choose_action(self, game):
         pass
 

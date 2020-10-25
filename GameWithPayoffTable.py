@@ -2,9 +2,9 @@ from Game import Game
 
 
 class GameWithPayoffTable(Game):
-    def __init__(self, game_specification):
-        self.game_specification = game_specification
-        self.payoff_dictionary = generate_payoff_dictionary(self.game_specification['payoffs'])
+    def __init__(self, payoff_table):
+        super().__init__()
+        self.payoff_dictionary = generate_payoff_dictionary(payoff_table)
 
     def determine_payoff(self, actions):
         return determine_payoff(self.payoff_dictionary, actions)

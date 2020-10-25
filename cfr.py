@@ -1,22 +1,20 @@
 import random
 
-from Agent import Agent
+from LearningAgent import LearningAgent
+from Game import Game
 from iterate import iterate
 
 
-class CFRAgent(Agent):
-    def __init__(self, game_specification, agent_index, regret=None, strategy=None):
-        self.game_specification = game_specification
+class CFRLearningAgent(LearningAgent):
+    def __init__(self, agent_index, game: Game, regret=None, strategy=None):
+        super().__init__()
         self.agent_index = agent_index
-        self.regret = regret if regret else create_initial_regret(game_specification)
+        self.regret = regret if regret else create_initial_regret(game)
         self.strategy = strategy if strategy else regret_to_strategy(self.regret)
         self.action = None
 
-    def choose_action(self, game):
-        self.action = random.choices(
-            game.game_specification['actions'],
-            weights=self.strategy
-        )[0]
+    def choose_action(self, game: Game):
+        self.action = choose_action(game, self.strategy)
         return self.action
 
     def receive_result(self, result):
@@ -27,74 +25,43 @@ class CFRAgent(Agent):
         self.strategy = regret_to_strategy(self.regret)
 
 
-def create_initial_regret(game_specification):
-    return [0.0] * len(game_specification['actions'])
+def create_initial_regret(game):
+    return [0.0] * len(game.get_all_actions())
 
 
-def cfr_with_agents(game, number_of_iterations):
-    regrets = tuple(
-        create_initial_regret(game.game_specification)
-        for player
-        in range(game.game_specification['number_of_players'])
+def choose_action(game: Game, strategy):
+    action = random.choices(
+        game.get_all_actions(),
+        weights=determine_weights_for_action(game, strategy)
+    )[0]
+    return action
+
+
+def determine_weights_for_action(game, strategy):
+    valid_actions = set(game.determine_valid_actions())
+    weights = tuple(
+        strategy[action_index] if action in valid_actions else 0
+        for action_index, action
+        in enumerate(game.get_all_actions())
     )
-    strategies = regrets_to_strategies(regrets)
-    agents = tuple(
-        CFRAgent(game, agent_index, regret=regrets[agent_index], strategy=strategies[agent_index])
-        for agent_index
-        in range(game.game_specification['number_of_players'])
-    )
+    return weights
+
+
+def cfr(game, number_of_iterations):
     iterate(
-        lambda: cfr_with_agents_step(game),
+        lambda: cfr_step(game),
         number_of_iterations
     )
     strategies = tuple(
         agent.strategy
         for agent
-        in agents
+        in game.players
     )
     return strategies
 
 
-def cfr_with_agents_step(game):
+def cfr_step(game):
     game.play_a_round()
-
-
-def cfr(game, number_of_iterations):
-    regrets = tuple(
-        [0.0] * len(game.game_specification['actions'])
-        for player
-        in range(game.game_specification['number_of_players'])
-    )
-    strategies = regrets_to_strategies(regrets)
-
-    regrets, strategies = iterate(
-        lambda args: cfr_step(game, args),
-        number_of_iterations,
-        (
-            regrets,
-            strategies
-        )
-    )
-
-    return strategies
-
-
-def cfr_step(game, args):
-    regrets, strategies = args
-    actions = [None] * game.game_specification['number_of_players']
-    for player in range(game.game_specification['number_of_players']):
-        strategy = strategies[player]
-        actions[player] = random.choices(game.game_specification['actions'], weights=strategy)[0]
-
-    payoff = game.determine_payoff(actions)
-    for player in range(game.game_specification['number_of_players']):
-        regret = -payoff[player]
-        if regret > 0:
-            regrets[player][actions[player]] += regret
-
-    strategies = regrets_to_strategies(regrets)
-
-    return regrets, strategies
 
 
 def regret_to_strategy(regret):

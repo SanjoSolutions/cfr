@@ -1,7 +1,6 @@
 from enum import IntEnum
 
 from GameWithPayoffTable import GameWithPayoffTable
-from cfr import cfr
 
 
 class Action(IntEnum):
@@ -32,12 +31,16 @@ payoff_table = (
 )
 
 
-if __name__ == '__main__':
-    game = GameWithPayoffTable({
-        'number_of_players': 2,
-        'actions': list(Action),
-        'payoffs': payoff_table,
-    })
-    number_of_iterations = 2000000
-    strategies = cfr(game, number_of_iterations)
-    print('strategies', strategies)
+class SchereSteinPapierBrunnen(GameWithPayoffTable):
+    def __init__(self, number_of_players, payoff_table):
+        super().__init__(payoff_table)
+        self.number_of_players = number_of_players
+
+    def get_number_of_players(self):
+        return self.number_of_players
+
+    def get_all_actions(self):
+        return list(Action)
+
+    def determine_valid_actions(self):
+        return self.get_all_actions()

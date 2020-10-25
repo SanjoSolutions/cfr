@@ -1,7 +1,7 @@
 import unittest
 
 from cfr import determine_payoff, generate_payoff_dictionary
-from schere_stein_papier_brunnen import Action, payoff_table
+from schere_stein_papier_brunnen.players_2 import Action, payoff_table
 
 
 class Tests(unittest.TestCase):
