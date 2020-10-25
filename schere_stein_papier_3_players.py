@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+from GameWithPayoffTable import GameWithPayoffTable
 from cfr import cfr
 
 
@@ -42,11 +43,11 @@ payoff_table = (
 
 
 if __name__ == '__main__':
-    game = {
+    game = GameWithPayoffTable({
         'number_of_players': 3,
         'actions': list(Action),
         'payoffs': payoff_table,
-    }
+    })
     number_of_iterations = 1000000
     strategies = cfr(game, number_of_iterations)
     print('strategies', strategies)
